@@ -9,13 +9,29 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
-
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
+Plugin 'godlygeek/tabular'
+Plugin 'tpope/vim-fugitive'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/syntastic'
+Plugin 'kballard/vim-swift'
 
 call vundle#end()
 " ***
 " Vundle setup ends
 "
+
+" Syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 
 " encoding of config
 scriptencoding utf-8
@@ -100,8 +116,16 @@ set hidden
 " 1 height windows
 set winminheight=1
 
-" Enable syntax highlighting
-syntax on
+" Enable syntax highlighting and apply color scheme
+syntax enable
+set background=dark
+if !has('gui')
+    let g:solarized_termtrans = 1
+    if $TERM == "xterm-256color"
+       let g:solarized_termcolors=256
+    endif
+endif
+colorscheme solarized
 
 " By default, go for an indent of 4
 set shiftwidth=4
@@ -126,7 +150,6 @@ set expandtab
 "c indent style
 set cindent
 set modeline
-colors default
 set nowrap
 set listchars+=precedes:<,extends:>
 set sidescroll=5
@@ -151,30 +174,6 @@ set ruler
 " Set our fonts
 set guifont=Monaco:h11
 
-" Try to load a nice colourscheme
-fun! LoadColourScheme(schemes)
-    let l:schemes = a:schemes . ":"
-    while l:schemes != ""
-        let l:scheme = strpart(l:schemes, 0, stridx(l:schemes, ":"))
-        let l:schemes = strpart(l:schemes, stridx(l:schemes, ":") + 1)
-        try
-            exec "colorscheme" l:scheme
-            break
-        catch
-        endtry
-    endwhile
-endfun
- 
-if has('gui')
-     call LoadColourScheme("inkpot")
-else
-     if &t_Co == 88 || &t_Co == 256
-         call LoadColourScheme("inkpot:darkblue:elflord")
-     else
-         call LoadColourScheme("darkblue:elflord")
-     endif
-endif
-
 " No icky toolbar, menu or scrollbars in the GUI
 if has('gui')
     set guioptions-=m
@@ -191,23 +190,6 @@ set statusline=%=%f\ \"%F\"\ %m%R\ [%4l(%3p%%):%3c-(0x%2B,\0%2b),%Y,%{&encoding}
 " Include $HOME in cdpath
 let &cdpath=','.expand("$HOME").','.expand("$HOME").'/work'
 
-
-" Show tabs and trailing whitespace visually
-"if (&termencoding == "utf-8") || has("gui_running")
-"    if v:version >= 700
-"        set list listchars=tab:»·,trail:·,extends:…,nbsp:‗
-"    else
-"        set list listchars=tab:»·,trail:·,extends:…
-"    endif
-"else
-"    if v:version >= 700
-"        set list listchars=tab:>-,trail:.,extends:>,nbsp:_
-"    else
-"        set list listchars=tab:>-,trail:.,extends:>
-"    endif
-"endif
-
-"set fillchars=fold:-
 
 "-----------------------------------------------------------------------
 " completion
@@ -288,8 +270,6 @@ augroup myfiletypes
     autocmd FileType ruby,eruby,yaml set ai sw=2 sts=2 et
 augroup END
 
-
-
 " content creation
 augroup content
     autocmd BufNewFile *.php 0put = '?>'|
@@ -324,201 +304,6 @@ augroup content
                 \ set sw=4 sts=4 et tw=80 | norm G
 augroup END
 
-autocmd VimEnter *
-            \ if has('gui') |
-            \        highlight ShowMarksHLl gui=bold guifg=#a0a0e0 guibg=#2e2e2e |
-            \        highlight ShowMarksHLu gui=none guifg=#a0a0e0 guibg=#2e2e2e |
-            \        highlight ShowMarksHLo gui=none guifg=#a0a0e0 guibg=#2e2e2e |
-            \        highlight ShowMarksHLm gui=none guifg=#a0a0e0 guibg=#2e2e2e |
-            \        highlight SignColumn   gui=none guifg=#f0f0f8 guibg=#2e2e2e |
-            \    endif
-
-" Settings for explorer.vim
-let g:explHideFiles='^\.'
-
-" Settings for netrw
-let g:netrw_list_hide='^\.,\~$'
-
-"-----------------------------------------------------------------------
-" plugin / script / app settings
-"-----------------------------------------------------------------------
-
-" Perl specific options
-let perl_include_pod=1
-let perl_fold=1
-let perl_fold_blocks=1
-
-" Vim specific options
-let g:vimsyntax_noerror=1
-
-" c specific options
-let g:c_gnu=1
-
-" eruby options
-au Syntax * hi link erubyRubyDelim Directory
-
-" Settings for taglist.vim
-let Tlist_Use_Right_Window=1
-let Tlist_Auto_Open=0
-let Tlist_Enable_Fold_Column=0
-let Tlist_Compact_Format=1
-let Tlist_WinWidth=28
-let Tlist_Exit_OnlyWindow=1
-let Tlist_File_Fold_Auto_Close = 1
-nnoremap <silent> <F9> :Tlist<CR>
-
-" Settings for showmarks.vim
-if has("gui_running")
-    let g:showmarks_enable=1
-else
-    let g:showmarks_enable=0
-    let loaded_showmarks=1
-endif
-
-if has("autocmd")
-    fun! <SID>FixShowmarksColours()
-        if has('gui') 
-            hi ShowMarksHLl gui=bold guifg=#a0a0e0 guibg=#2e2e2e 
-            hi ShowMarksHLu gui=none guifg=#a0a0e0 guibg=#2e2e2e 
-            hi ShowMarksHLo gui=none guifg=#a0a0e0 guibg=#2e2e2e 
-            hi ShowMarksHLm gui=none guifg=#a0a0e0 guibg=#2e2e2e 
-            hi SignColumn   gui=none guifg=#f0f0f8 guibg=#2e2e2e 
-        endif
-    endfun
-    if v:version >= 700
-        autocmd VimEnter,Syntax,ColorScheme * call <SID>FixShowmarksColours()
-    else
-        autocmd VimEnter,Syntax * call <SID>FixShowmarksColours()
-    endif
-endif
-
-" Settings for explorer.vim
-let g:explHideFiles='^\.'
-
-" Settings for netrw
-let g:netrw_list_hide='^\.,\~$'
-
-" Settings for :TOhtml
-let html_number_lines=1
-let html_use_css=1
-let use_xhtml=1
-
-" cscope settings
-if has('cscope') && filereadable("/usr/bin/cscope")
-    set csto=0
-    set cscopetag
-    set nocsverb
-    if filereadable("cscope.out")
-        cs add cscope.out
-    endif
-    set csverb
-
-    let x = "sgctefd"
-    while x != ""
-        let y = strpart(x, 0, 1) | let x = strpart(x, 1)
-        exec "nmap <C-j>" . y . " :cscope find " . y .
-                    \ " <C-R>=expand(\"\<cword\>\")<CR><CR>"
-        exec "nmap <C-j><C-j>" . y . " :scscope find " . y .
-                    \ " <C-R>=expand(\"\<cword\>\")<CR><CR>"
-    endwhile
-    nmap <C-j>i      :cscope find i ^<C-R>=expand("<cword>")<CR><CR>
-    nmap <C-j><C-j>i :scscope find i ^<C-R>=expand("<cword>")<CR><CR>
-endif
-
-"-----------------------------------------------------------------------
-" final commands
-"-----------------------------------------------------------------------
-
-" turn off any existing search
-if has("autocmd")
-    au VimEnter * nohls
-endif
-
-" перекодировка 
-let b:encindex=0
-function! RotateEnc()
-        let y = -1
-        while y == -1
-                let encstring = "#8bit-cp1251#8bit-cp866#utf-8#koi8-r#"
-                let x = match(encstring,"#",b:encindex)
-                let y = match(encstring,"#",x+1)
-                let b:encindex = x+1
-                if y == -1
-                        let b:encindex = 0
-                else
-                        let str = strpart(encstring,x+1,y-x-1)
-                        return ":set encoding=".str
-                endif
-        endwhile
-endfunction
-
-"-----------------------------------------------------------------------
-" special less.sh and man modes
-"-----------------------------------------------------------------------
-
-fun! <SID>is_pager_mode()
-    let l:ppidc = ""
-    try
-        if filereadable("/lib/libc.so.6")
-            let l:ppid = libcallnr("/lib/libc.so.6", "getppid", "")
-        elseif filereadable("/lib/libc.so.0")
-            let l:ppid = libcallnr("/lib/libc.so.0", "getppid", "")
-        else
-            let l:ppid = ""
-        endif
-        let l:ppidc = system("ps -p " . l:ppid . " -o comm=")
-        let l:ppidc = substitute(l:ppidc, "\\n", "", "g")
-    catch
-    endtry
-    return l:ppidc ==# "less.sh" ||
-                \ l:ppidc ==# "vimpager" ||
-                \ l:ppidc ==# "manpager.sh" ||
-                \ l:ppidc ==# "vimmanpager"
-endfun
-
-if <SID>is_pager_mode()
-    " we're in vimpager / less.sh / man mode
-    set laststatus=0
-    set ruler
-    set foldmethod=manual
-    set foldlevel=99
-    set nolist
-endif
-
-"-----------------------------------------------------------------------
-" mappings
-"-----------------------------------------------------------------------
-
-" Find a buffer with the given number (ordering is such that the first
-" entry shown in minibufexpl is 1, the second is 2 and so on). If
-" there's already a window open for that buffer, switch to it. Otherwise
-" switch the current window to use that buffer.
-fun! <SID>SelectBuffer(wantedbufnum)
-    let l:buflast = bufnr("$")
-    let l:bufidx = 0
-    let l:goodbufcount = 0
-    while (l:bufidx < l:buflast)
-        let l:bufidx = l:bufidx + 1
-        if buflisted(l:bufidx)
-            let l:bufname = bufname(l:bufidx)
-            if (strlen(l:bufname)) &&
-                        \ getbufvar(l:bufidx, "&modifiable") == 1 &&
-                        \ l:bufname != '-MiniBufExplorer-'
-                let l:goodbufcount = l:goodbufcount + 1
-                if l:goodbufcount == a:wantedbufnum
-                    let l:winnr = bufwinnr(l:bufidx)
-                    if l:winnr > -1
-                        execute l:winnr . "wincmd w"
-                    else
-                        execute "buffer " . l:bufidx
-                    endif
-                    break
-                endif
-            endif
-        endif
-    endwhile
-endfun
-
 nmap   <F5>   :bprev<CR>
 imap   <F5>   <Esc>:bprev<CR>
 nmap   <F6>   :bnext<CR>
@@ -532,12 +317,6 @@ imap <C-S-tab> <ESC>:tabprevious<cr>i
 imap <C-tab> <ESC>:tabnext<cr>i 
 nmap <C-t> :tabnew<cr> 
 imap <C-t> <ESC>:tabnew<cr>
-
-" Delete a buffer but keep layout
-if has("eval")
-    command! Kwbd enew|bw #
-    nmap     <C-w>!   :Kwbd<CR>
-endif
 
 " автодополнение фигурной скобки (так, как я люблю :)
 imap {<CR> {<CR>}<Esc>O<Tab>
@@ -604,6 +383,3 @@ nmap <F1> :set<Space>nu!<CR>
 " вкл/выкл отображения найденных соответствий
 imap <S-F1> <Esc>:set<Space>hls!<CR>a
 nmap <S-F1> :set<Space>hls!<CR>
-
-" q: sucks
-nmap q: :q
