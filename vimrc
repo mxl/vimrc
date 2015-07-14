@@ -5,10 +5,10 @@
 set nocompatible
 filetype off
 " set the runtime path to include Vundle
-set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=~/.vim/bundle/vundle
 call vundle#begin()
 
-Plugin 'VundleVim/Vundle.vim'
+Plugin 'gmarik/vundle'
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'godlygeek/tabular'
 Plugin 'tpope/vim-fugitive'
@@ -16,6 +16,7 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
 Plugin 'kballard/vim-swift'
+Plugin 'bling/vim-airline'
 
 call vundle#end()
 " ***
@@ -60,9 +61,6 @@ endif
 set clipboard=unnamedplus
 " show line numbers
 set number
-" set nocompatible with vi
-" vi is suks!
-set nocompatible
 
 " Enable a nice big viminfo file
 set viminfo='1000,f1,:1000,/1000
@@ -84,6 +82,7 @@ set showmatch
 " search
 set incsearch
 set ignorecase
+set smartcase
 set infercase
 set hlsearch
 
@@ -147,10 +146,12 @@ set tabstop=4
 set shiftwidth=4
 set smarttab
 set expandtab
+
 "c indent style
 set cindent
+
 set modeline
-set nowrap
+set wrap
 set listchars+=precedes:<,extends:>
 set sidescroll=5
 set sidescrolloff=5
@@ -159,6 +160,7 @@ set showmatch " проверка скобок
 set history=1000 " увеличение истории команд
 set undolevels=1000
 set ttyfast
+
 " Syntax when printing
 set popt+=syntax:y
 
@@ -170,6 +172,8 @@ else
 endif
 
 set ruler
+set magic
+set autoread
 
 " Set our fonts
 set guifont=Monaco:h11
@@ -198,116 +202,6 @@ set dictionary=/usr/share/dict/words
 " php function completion
 set tags+=/home/devil/php-tags/tags
 
-"-----------------------------------------------------------------------
-" autocmds
-"-----------------------------------------------------------------------
-
-" If we're in a wide window, enable line numbers.
-fun! <SID>WindowWidth()
-    if winwidth(0) > 90
-        setlocal foldcolumn=0
-        setlocal number
-    else
-        setlocal nonumber
-        setlocal foldcolumn=0
-    endif
-endfun
-
-" Force active window to the top of the screen without losing its
-" size.
-fun! <SID>WindowToTop()
-    let l:h=winheight(0)
-    wincmd K
-    execute "resize" l:h
-endfun
-
-" Force active window to the bottom of the screen without losing its
-" size.
-fun! <SID>WindowToBottom()
-    let l:h=winheight(0)
-    wincmd J
-    execute "resize" l:h
-endfun
-
-" Update .*rc header
-fun! <SID>UpdateRcHeader()
-    let l:c=col(".")
-    let l:l=line(".")
-    1,10s-\(Most recent update:\).*-\="Most recent update: ".strftime("%c")-e
-    call cursor(l:l, l:c)
-endfun
-
-" autocmds
-augroup devil
-   autocmd!
-
-   " Automagic line numbers
-   autocmd BufEnter * :call <SID>WindowWidth()
-
-   " Update header in .vimrc and .bashrc before saving
-   autocmd BufWritePre *vimrc  :call <SID>UpdateRcHeader()
-   autocmd BufWritePre *bashrc :call <SID>UpdateRcHeader()
-
-   " Always do a full syntax refresh
-   autocmd BufEnter * syntax sync fromstart
-
-   " For help files, move them to the top window and make <Return>
-   " behave like <C-]> (jump to tag)
-   autocmd FileType help :call <SID>WindowToTop()
-   autocmd FileType help nmap <buffer> <Return> <C-]>
-
-   " bash-completion ftdetects
-   autocmd BufNewFile,BufRead /*/*bash*completion*/*
-               \ if expand("<amatch>") !~# "ChangeLog" |
-               \     let b:is_bash = 1 | set filetype=sh |
-               \ endif
-augroup END
-
-augroup myfiletypes
-    " Clear old autocmds in group
-    autocmd!
-    " autoindent with two spaces, always expand tabs
-    autocmd FileType ruby,eruby,yaml set ai sw=2 sts=2 et
-augroup END
-
-" content creation
-augroup content
-    autocmd BufNewFile *.php 0put = '?>'|
-                \ 0put = '// vim: set sw=4 sts=4 et foldmethod=syntax :'|
-                \ 0put = '<?'|
-                \ set sw=4 sts=4 et tw=80 |
-                \ norm G
-    autocmd BufNewFile *.php5 0put = '?>'|
-                \ 0put = '// vim: set sw=4 sts=4 et foldmethod=syntax :'|
-                \ 0put = '<?'|
-                \ set sw=4 sts=4 et tw=80 |
-                \ norm G
-    autocmd BufNewFile *.rb 0put ='# vim: set sw=2 sts=2 et tw=80 :' |
-                \ 0put ='#!/usr/bin/env ruby' | set sw=2 sts=2 et tw=80 |
-                \ norm G
-    autocmd BufNewFile *.sh 0put ='# vim: set sw=4 sts=4 et tw=80 :' |
-                \ 0put ='#!/usr/bin/bash' | set sw=4 sts=4 et tw=80 |
-                \ norm G
-
-    autocmd BufNewFile *.pl 0put ='# vim: set sw=4 sts=4 et tw=80 :' |
-                \ 0put ='#!/usr/bin/perl' | set sw=4 sts=4 et tw=80 |
-                \ norm G
-
-    autocmd BufNewFile *.hh 0put ='/* vim: set sw=4 sts=4 et foldmethod=syntax : */' |
-                \ 1put ='' | call MakeIncludeGuards() |
-                \ 5put ='#include \"config.h\"' |
-                \ set sw=4 sts=4 et tw=80 | norm G
-
-    autocmd BufNewFile *.cc 0put ='/* vim: set sw=4 sts=4 et foldmethod=syntax : */' |
-                \ 1put ='' | 2put ='' | call setline(3, '#include "' .
-                \ substitute(expand("%:t"), ".cc$", ".hh", "") . '"') |
-                \ set sw=4 sts=4 et tw=80 | norm G
-augroup END
-
-nmap   <F5>   :bprev<CR>
-imap   <F5>   <Esc>:bprev<CR>
-nmap   <F6>   :bnext<CR>
-imap   <F6>   <Esc>:bnext<CR>
 " tabs 
 nmap <C-S-tab> :tabprevious<cr> 
 nmap <C-tab> :tabnext<cr> 
@@ -318,68 +212,11 @@ imap <C-tab> <ESC>:tabnext<cr>i
 nmap <C-t> :tabnew<cr> 
 imap <C-t> <ESC>:tabnew<cr>
 
-" автодополнение фигурной скобки (так, как я люблю :)
+" add closing } automatically
 imap {<CR> {<CR>}<Esc>O<Tab>
 
 " автодополнение по Control+Space
 imap <C-Space> <C-N>
-" 'умный' Home
-nmap <Home> ^
-imap <Home> <Esc>I
 
-" выход
-imap <F12> <Esc>:qa<CR>
-nmap <F12> :qa<CR>
-
-" сохранение текущего буфера
-imap <F2> <Esc>:w<CR>a
-nmap <F2> :w<CR>
-
-" сохранение всех буферов
-imap <S-F2> <Esc>:wa<CR>a
-nmap <S-F2> :wa<CR>
-" no search 
-nmap <silent> <F3> :silent nohlsearch<CR>
-imap <silent> <F3> <C-o>:silent nohlsearch<CR>
-" список буферов
-imap <S-F4> <Esc>:buffers<CR>
-nmap <S-F4> :buffers<CR>
-
-" закрыть буфер
-imap <C-F4> <Esc>:bd<CR>a
-nmap <C-F4> :bd<CR>
-
-" перекодировка
-map <F8> :execute RotateEnc()<CR>
-
-" окно ниже и развернуть
-imap <C-F8> <Esc><C-W>j<C-W>_a
-nmap <C-F8> <C-W>j<C-W>_
-
-" окно выше и развернуть
-imap <C-F7> <Esc><C-W>k<C-W>_a
-nmap <C-F7> <C-W>k<C-W>_
-
-" окно левее
-imap <S-F7> <Esc><C-W>ha
-nmap <S-F7> <C-W>h
-
-" окно правее
-imap <S-F8> <Esc><C-W>la
-nmap <S-F8> <C-W>l
-
-" следующая ошибка
-imap <C-F10> <Esc>:cn<CR>i
-nmap <C-F10> :cn<CR>
-
-" предыдущая ошибка
-imap <S-F10> <Esc>:cp<CR>i
-nmap <S-F10> :cp<CR>
-
-" вкл/выкл отображения номеров строк
-imap <F1> <Esc>:set<Space>nu!<CR>a
-nmap <F1> :set<Space>nu!<CR>
-
-" вкл/выкл отображения найденных соответствий
-imap <S-F1> <Esc>:set<Space>hls!<CR>a
-nmap <S-F1> :set<Space>hls!<CR>
+" unset the "last search pattern" register by hitting return 
+nnoremap <CR> :noh<CR><CR>
