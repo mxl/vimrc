@@ -58,7 +58,7 @@ endif
 " settings
 "-----------------------------------------------------------------------
 " use system clipboard
-set clipboard=unnamedplus
+set clipboard=unnamed
 " show line numbers
 set number
 
@@ -220,3 +220,21 @@ imap <C-Space> <C-N>
 
 " unset the "last search pattern" register by hitting return 
 nnoremap <CR> :noh<CR><CR>
+
+" map cyrillic characters to latin
+let rumap = 'йцукенгшщзхъфывапролджэёячсмитьбюЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ'
+let enmap = 'qwertyuiop[]asdfghjkl;''\zxcvbnm,.QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>' 
+let mapLen = strchars(rumap)
+let i = 0
+while i < mapLen
+    let ruChar = matchstr(rumap, ".", byteidx(rumap, i))
+    let enChar = enmap[i]
+    "echo 'map '.ruChar.' '.enChar
+    "echo 'cmap '.ruChar.' '.enChar
+    execute 'map '.ruChar.' '.enChar
+    execute 'cmap '.ruChar.' '.enChar
+    let i += 1
+endwhile
+
+map Ё \|
+cmap Ё \|
