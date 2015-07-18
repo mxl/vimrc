@@ -119,10 +119,9 @@ set winminheight=1
 syntax enable
 set background=dark
 if !has('gui')
+    set t_Co=256
     let g:solarized_termtrans = 1
-    if $TERM == "xterm-256color"
-       let g:solarized_termcolors=256
-    endif
+    let g:solarized_termcolors=256
 endif
 colorscheme solarized
 
