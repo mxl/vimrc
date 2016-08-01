@@ -242,3 +242,7 @@ endwhile
 
 map Ё \|
 cmap Ё \|
+
+" command aliases
+
+cabbrev format_json !python -m json.tool
