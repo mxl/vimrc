@@ -140,6 +140,7 @@ inoremap # X<BS>#
 " Enable folds
 set foldenable
 set foldmethod=syntax
+set foldlevelstart=5
 
 " Enable filetype settings
 filetype plugin indent on
