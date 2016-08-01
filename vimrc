@@ -16,7 +16,11 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
 Plugin 'kballard/vim-swift'
-Plugin 'bling/vim-airline'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'mustache/vim-mustache-handlebars' 
+Plugin 'leafgarland/typescript-vim'
+Plugin 'derekwyatt/vim-scala'
 
 call vundle#end()
 " ***
