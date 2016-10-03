@@ -15,12 +15,12 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
-Plugin 'kballard/vim-swift'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'mustache/vim-mustache-handlebars' 
 Plugin 'leafgarland/typescript-vim'
 Plugin 'derekwyatt/vim-scala'
+Plugin 'keith/swift.vim'
 
 call vundle#end()
 " ***
