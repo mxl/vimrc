@@ -124,11 +124,9 @@ set winminheight=1
 " Enable syntax highlighting and apply color scheme
 syntax enable
 set background=dark
-if !has('gui')
-    set t_Co=256
-    let g:solarized_termtrans = 1
-    let g:solarized_termcolors=256
-endif
+set t_Co=256
+let g:solarized_termtrans = 1
+let g:solarized_termcolors=256
 colorscheme solarized
 
 " By default, go for an indent of 4
