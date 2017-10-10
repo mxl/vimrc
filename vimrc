@@ -130,9 +130,6 @@ let g:solarized_termtrans = 1
 let g:solarized_termcolors=256
 colorscheme solarized
 
-" By default, go for an indent of 4
-set shiftwidth=4
-
 " Do clever indent things. Don't make a # force column zero.
 set autoindent
 set smartindent
@@ -147,8 +144,8 @@ set foldlevelstart=5
 filetype plugin indent on
 
 " set tab to 4 spaces
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set smarttab
 set expandtab
 
