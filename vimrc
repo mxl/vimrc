@@ -9,6 +9,7 @@ set rtp+=~/.vim/bundle/vundle
 call vundle#begin()
 
 Plugin 'gmarik/vundle'
+Plugin 'editorconfig/editorconfig-vim'
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'godlygeek/tabular'
 Plugin 'tpope/vim-fugitive'
