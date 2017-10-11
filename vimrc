@@ -22,6 +22,7 @@ Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'keith/swift.vim'
+Plugin 'Valloric/YouCompleteMe'
 
 call vundle#end()
 " ***
