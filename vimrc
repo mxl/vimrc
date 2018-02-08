@@ -65,8 +65,13 @@ endif
 "-----------------------------------------------------------------------
 " settings
 "-----------------------------------------------------------------------
-" use system clipboard
-set clipboard=unnamed
+if has("clipboard")
+  set clipboard=unnamed " copy to the system clipboard
+
+  if has("unnamedplus") " X11 support
+    set clipboard+=unnamedplus
+  endif
+endif
 " show line numbers
 set number
 
@@ -245,3 +250,12 @@ cmap Ё \|
 " command aliases
 
 cabbrev format_json !python -m json.tool
+
+" fastlane
+au BufNewFile,BufRead Appfile set ft=ruby
+au BufNewFile,BufRead Deliverfile set ft=ruby
+au BufNewFile,BufRead Fastfile set ft=ruby
+au BufNewFile,BufRead Gymfile set ft=ruby
+au BufNewFile,BufRead Matchfile set ft=ruby
+au BufNewFile,BufRead Snapfile set ft=ruby
+au BufNewFile,BufRead Scanfile set ft=ruby
