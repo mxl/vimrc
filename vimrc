@@ -1,3 +1,6 @@
+if has('python3')
+  silent! python3 1
+endif
 " ***
 " Vundle setup begins
 " ***
@@ -22,7 +25,7 @@ Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'keith/swift.vim'
-Plugin 'Valloric/YouCompleteMe'
+Plugin 'valloric/youcompleteme'
 
 call vundle#end()
 " ***
@@ -131,9 +134,11 @@ set winminheight=1
 " Enable syntax highlighting and apply color scheme
 syntax enable
 set background=dark
-set t_Co=256
-let g:solarized_termtrans = 1
-let g:solarized_termcolors=256
+if !has('gui_running')
+    set t_Co=256
+    let g:solarized_termtrans = 1
+    let g:solarized_termcolors=256
+endif
 colorscheme solarized
 
 " Do clever indent things. Don't make a # force column zero.

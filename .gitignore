@@ -1,5 +1,0 @@
-/backup/
-/bundle/
-!/bundle/vundle/
-.*
-!.gitignore
