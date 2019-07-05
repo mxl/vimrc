@@ -264,3 +264,6 @@ au BufNewFile,BufRead Gymfile set ft=ruby
 au BufNewFile,BufRead Matchfile set ft=ruby
 au BufNewFile,BufRead Snapfile set ft=ruby
 au BufNewFile,BufRead Scanfile set ft=ruby
+
+" select all
+map <C-a> <esc>ggVG<CR>
